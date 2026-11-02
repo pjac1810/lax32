@@ -1,0 +1,10 @@
+{
+  "what": "LAX-32 turns the FM-1 into a multitimbral LA-style sound module after the 1987 Roland MT-32: 8 parts plus rhythm on MIDI, 128 sounds in MT-32 order, 30 drums, 32 partials, reverb and a 20-character LCD. Adds an arpeggiator and a 6-track, 64-step sequencer modelled on Skiff's. No Roland ROM used.",
+  "author": "Philippe Jaccoud",
+  "kinds": [
+    "synth",
+    "groove"
+  ],
+  "play": "https://pjac1810.github.io/lax32/",
+  "image": "docs/lax32-240.png"
+}
