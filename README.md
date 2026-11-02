@@ -9,7 +9,8 @@ On y retrouve :
 - **30 sons de batterie et de percussions**, sur les notes 35 à 75 ;
 - **32 partiels de polyphonie** : 16 notes de un ou deux partiels ;
 - une **réverbération** en 4 modes : ROOM, HALL, PLATE, TAP DELAY ;
-- un **afficheur LCD de 20 caractères** à matrice de points 5 × 8, rétroéclairé en jaune-vert, avec le témoin MIDI MESSAGE.
+- un **afficheur LCD de 20 caractères** à matrice de points 5 × 8, rétroéclairé en jaune-vert, avec le témoin MIDI MESSAGE ;
+- depuis la version 0.2, un **arpégiateur** par partie et un **séquenceur de 6 pistes**, sur le modèle de ceux de [Skiff](https://github.com/illuminus5/skiff).
 
 C'est un projet indépendant, sans lien avec Roland ni M-VAVE :
 
@@ -46,6 +47,46 @@ Le moteur tourne à 22 kHz, ce qui donne la couleur un peu feutrée des modules 
 
 Les messages système exclusifs (SysEx) ne sont pas reçus : le FM-1 les réserve à sa mise à jour. Les messages que certains jeux écrivaient sur l'afficheur, et l'édition des sons par SysEx, ne sont donc pas possibles.
 
+## L'arpégiateur
+
+Chaque partie a le sien. Il joue les notes tenues au clavier (ou reçues en MIDI sur le canal de la partie), au tempo du séquenceur.
+
+- **ARP** : MODE, RATE (1/4, 1/8, 1/16, 1/32, 8T, 16T, 1/2, 1/1), OCTAVES (1-4), GATE.
+- **ARP** une seconde fois, **ARP 2** : SWING, CHANCE (une note sur deux, sur trois…), HOLD (les notes continuent quand on lâche ; un nouvel accord remplace l'ancien), ORDER (de la plus grave à la plus aiguë, ou dans l'ordre joué).
+- Les 14 modes de Skiff : UP, DN, UPDN, RND, ORD (ordre joué), REPEAT (la dernière note), DNUP, UP+8 (la première note reprise une octave plus haut), CONV (de l'extérieur vers l'intérieur), DIVG (l'inverse), PINKY (la note aiguë entre chaque), THUMB (la note grave entre chaque), WALK (un pas au hasard vers le haut ou le bas), CHORD (l'accord entier, une octave plus haut à chaque pas).
+- Une partie dont l'arpégiateur est en marche porte `ar` dans la liste, et le bouton ARP s'allume.
+
+## Le séquenceur
+
+**6 pistes**, chacune jouant l'une des 9 parties (au départ les parties 1 à 5 et le rythme), de **64 pas** au plus, et **4 patterns** (A à D).
+
+Chaque pas a :
+
+- un accord de 4 notes au plus (sur la piste rythmique : 4 percussions) ;
+- sa longueur, de 1/16 de pas à 64 pas, et les notes peuvent se chevaucher ;
+- sa vélocité, et un accent ;
+- une **chance** (1-100 %) ou une **condition** : FILL, !FILL, 1:2, 2:2, 1:3… 4:4 (au 1er passage sur 2, au 2e sur 2…) ;
+- un **ratchet** (×1 à ×4) ou un **flam** ;
+- un **nudge** : en avance ou en retard, de −32 à +31 soixante-quatrièmes de pas.
+
+Par piste : la longueur (1-64), la taille du pas (1/4 à 1/32, triolets, 1/2, 1/1), le sens (FWD, RVRS, PING, RAND) et le mute. Pour tout le séquenceur : le tempo (40-240), le swing et le métronome.
+
+Sur les pages du séquenceur, l'écran montre les 6 pistes et 16 pas, avec la tête de lecture et le curseur. Les lignes du dessous détaillent le pas sous le curseur.
+
+| Commande FM-1 | Fonction |
+|---|---|
+| SEQ | **STEP** : PITCH, OCTAVE, LENGTH, VELOCITY du pas sous le curseur ; une 2e fois **FEEL** : CHANCE/CONDITION, RATCHET/FLAM, NUDGE, ACCENT ; une 3e fois **TRACK** : PART, LENGTH, STEP (taille du pas), DIRECTION |
+| GLO | **GLOBAL** : TEMPO, SWING, PATTERN (A-D, change à la mesure suivante), CLICK (off, rec, on) |
+| SELECT | la piste 1 à 6 |
+| PRESETS | le curseur (le pas) |
+| PLAY | lecture / arrêt (le séquenceur répond aussi à Start et Stop en MIDI) |
+| REC | à l'arrêt, **enregistrement pas à pas** : les touches tenues ensemble font l'accord du pas, puis le curseur avance ; SEL ajoute un silence. Pendant la lecture, **enregistrement en direct** : la note va sur le pas le plus proche, s'ajoute à ce qui y est, et garde la durée de la touche. L'arpégiateur s'enregistre aussi. |
+| EDIT | efface le pas ; tenu 1 s, efface la piste |
+| LFO | mute de la piste |
+| SEL tenu | FILL (pendant la lecture) |
+
+Le pattern A est livré avec un petit groove (accords, basse, batterie) pour essayer tout de suite : SEQ puis PLAY.
+
 ## L'afficheur et les commandes
 
 L'**afficheur** montre, comme l'original :
@@ -65,10 +106,9 @@ Sous l'afficheur, les 9 parties sont listées avec leur canal, leur son, leur vo
 | OCT− / OCT+ | octave du clavier |
 | HOME | PART : VOLUME, PAN, KEY SHIFT (±24), FINE TUNE (±50 cents) |
 | FX | REVERB : MODE (ROOM, HALL, PLATE, TAP DELAY), TIME (1-8), LEVEL (0-7), réverb de la partie on/off |
-| ENV | SYSTEM : BEND RANGE (0-24), MASTER TUNE, CHANNELS (2-9 ou 1-8, rythme toujours sur 10) |
-| PLAY | joue ou arrête le morceau de démonstration (1 min) |
-| REC | all notes off |
-| SAVE | garde la configuration : sons, volumes, panoramiques, transpositions, réverb, canaux |
+| ENV | SYSTEM : BEND RANGE (0-24), MASTER TUNE, CHANNELS (2-9 ou 1-8, rythme toujours sur 10), DEMO (le morceau de démonstration, 1 min) |
+| ARP, SEQ, GLO | l'arpégiateur et le séquenceur (ci-dessus) |
+| SAVE | garde tout : sons, volumes, panoramiques, transpositions, réverb, canaux, arpégiateurs, pistes et les 4 patterns |
 | MASTER | volume |
 
 ## Utilisation avec un ordinateur
@@ -97,9 +137,10 @@ L'installation se fait depuis la page Install (Chrome ou Edge, FM-1 branché en 
 - `tools/gen_demo.py` : le morceau de démonstration → `src/demo.h`
 - `tools/gen_font.py` : la police 5 × 8 de l'afficheur → `src/font5x8.h`
 - `src/la.c` : voix et partiels, batteries, réverbération, MIDI (traité dans `audio()`)
+- `src/seq.c` : l'arpégiateur et le séquenceur, dans `audio()` par blocs de 64 échantillons (1,5 ms)
 - `src/main.c` : l'afficheur, les parties, les commandes, la sauvegarde
 - `tests/run.sh` : joue la démo, chaque son, chaque percussion, chaque mode de réverb, le bend et la modulation dans des WAV, puis fait un fuzz MIDI (UBSan)
-- Identité du paquet : `FM-1_38` (dans `firmware.json`)
+- Identité du paquet : `FM-1_38` + le dernier chiffre de la version (0.2 : `FM-1_382`)
 
 ## Licence
 

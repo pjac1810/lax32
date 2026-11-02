@@ -22,6 +22,11 @@ M-VAVE).
 
 LAX-32: `src/`, `firmware.json`, and its changes to the rest, by its authors, on [foma](https://github.com/konsumer/foma).
 
+The arpeggiator and the sequencer (`src/seq.c`, `src/sq.h`) follow [Skiff](https://github.com/illuminus5/skiff)
+(illuminus5, GPL-3.0, itself on Felucca): its arpeggio modes and how each picks its note (`arp_pick`, adapted),
+its trig conditions, the step's chance, ratchet, flam and nudge, its play directions, swing and live recording into
+the nearest step. The code is LAX-32's own, written for its parts and its LCD.
+
 ## Third-party material
 
 | What                                                                                      | Licence     | Where                                           |
